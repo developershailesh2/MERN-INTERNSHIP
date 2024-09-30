@@ -1,0 +1,35 @@
+.custom-select {
+  position: relative;
+  display: inline-block;
+  width: 200px;
+  font-size: 16px;
+  border-radius: 10px;
+}
+
+.select-selected {
+  background-color: hsl(0, 19%, 85%);
+  padding: 10px;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.select-items {
+  display: none;
+  position: absolute;
+  background-color: #f9f9f9;
+  z-index: 99;
+  border-radius: 10px;
+}
+
+.select-item {
+  padding: 10px;
+  cursor: pointer;
+}
+
+.select-item:hover {
+  background-color: aqua;
+}
+
+.custom-select.active .select-items {
+  display: block;
+}
