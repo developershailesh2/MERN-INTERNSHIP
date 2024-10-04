@@ -3,56 +3,66 @@ import { useFormik } from "formik";
 import { useEffect, useState } from "react";
 import { useCookies } from "react-cookie";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { EmpContract } from "../Contracts/emp_contract";
 import axios from "axios";
-import { response } from "express";
+import { EmpContract } from "../Contracts/emp_contract";
 
 export function EditEmployee() {
-  const [employee, setEmployee] = useState<EmpContract[]>([
-    {
-      emp_email: "",
-      emp_name: "",
-      emp_mobile: "",
-      emp_designation: "",
-      emp_gender: "",
-      emp_course: [], // Empty array for string array
-      created_date: "",
-      emp_file: null,
-      userId: "",
-    },
-  ]);
-
+  
   const [cookies, setCookies, removeCookies] = useCookies(["emp_email"]);
+  const [employee, setEmployee] = useState<EmpContract>({
+    emp_name: "",
+    emp_email: cookies["emp_email"],
+    emp_mobile: "",
+    emp_designation: "",
+    emp_gender: "",
+    emp_course: [], // Empty array for string array
+    created_date: "",
+   userId: "",
+  });
+
+  
 
   let navigate = useNavigate();
   let params = useParams();
+
+  // Fetch employee data on component mount
   useEffect(() => {
     axios
-      .get(`http://127.0.0.1:5252/get-employee/${params.emp_email}`)
+      .get(`http://127.0.0.1:5252/get-employee/${cookies["emp_email"]}`)
       .then((response) => {
-        setEmployee(response.data);
+        console.log(response.data);
+        setEmployee(response.data); // Update the state with the fetched employee data
+      })
+      .catch((error) => {
+        console.error("Error fetching employee data: ", error);
       });
   }, []);
 
+  // Formik form setup
   const formik = useFormik({
     initialValues: {
-      emp_email: employee[0].emp_email,
-      emp_name: employee[0].emp_name,
-      emp_mobile: employee[0].emp_mobile,
-      emp_designation: employee[0].emp_designation,
-      emp_gender: employee[0].emp_gender,
-      emp_course: employee[0].emp_course,
-      userId: cookies["emp_email"],
+      
+      emp_name: employee.emp_name || "",
+      emp_email: cookies["emp_email"] ,
+      emp_mobile: employee.emp_mobile || "",
+      emp_designation: employee.emp_designation || "",
+      emp_gender: employee.emp_gender || "",
+      emp_course: employee.emp_course || [],
     },
-    onSubmit: (user) => {
+    
+    onSubmit: (updatedEmployee) => {
       axios
-        .put(`http://127.0.0.1:5252/edit-employee/${params.emp_email}`, user)
+        .put(`http://127.0.0.1:5252/edit-employee/${params["emp_email"]}`, updatedEmployee)
         .then(() => {
-          alert(`Employee Edited...`);
+          console.log(updatedEmployee);
+          alert("Employee Details Edited...");
           navigate("/admin-dashboard");
+        })
+        .catch((error) => {
+          console.error("Error updating employee: ", error);
         });
     },
-    enableReinitialize: true,
+    enableReinitialize: true, // Reinitialize form with updated employee data
   });
 
   return (
@@ -86,6 +96,7 @@ export function EditEmployee() {
                       name="emp_email"
                       onChange={formik.handleChange}
                       value={formik.values.emp_email}
+                      disabled // Email should not be editable
                     />
                   </div>
                 </div>
@@ -163,9 +174,15 @@ export function EditEmployee() {
                           <input
                             type="checkbox"
                             name="emp_course"
-                            onChange={formik.handleChange}
                             value="MCA"
-                            checked={formik.values.emp_course.includes("MCA")}
+    checked={formik.values.emp_course.includes("MCA")} // Correct: Check if array includes this value
+    onChange={(e) => {
+      if (e.target.checked) {
+        formik.setFieldValue("emp_course", [...formik.values.emp_course, e.target.value]);
+      } else {
+        formik.setFieldValue("emp_course", formik.values.emp_course.filter((course) => course !== e.target.value));
+      }
+    }}
                             id="mca"
                             className="form-check-input"
                           />
@@ -177,9 +194,15 @@ export function EditEmployee() {
                           <input
                             type="checkbox"
                             name="emp_course"
-                            onChange={formik.handleChange}
                             value="BCA"
-                            checked={formik.values.emp_course.includes("BCA")}
+    checked={formik.values.emp_course.includes("BCA")} // Correct: Check if array includes this value
+    onChange={(e) => {
+      if (e.target.checked) {
+        formik.setFieldValue("emp_course", [...formik.values.emp_course, e.target.value]);
+      } else {
+        formik.setFieldValue("emp_course", formik.values.emp_course.filter((course) => course !== e.target.value));
+      }
+    }}
                             id="bca"
                             className="form-check-input"
                           />
@@ -191,9 +214,15 @@ export function EditEmployee() {
                           <input
                             type="checkbox"
                             name="emp_course"
-                            onChange={formik.handleChange}
-                            value="BSc"
-                            checked={formik.values.emp_course.includes("BSc")}
+                            value="BCA"
+    checked={formik.values.emp_course.includes("BSc")} // Correct: Check if array includes this value
+    onChange={(e) => {
+      if (e.target.checked) {
+        formik.setFieldValue("emp_course", [...formik.values.emp_course, e.target.value]);
+      } else {
+        formik.setFieldValue("emp_course", formik.values.emp_course.filter((course) => course !== e.target.value));
+      }
+    }}
                             id="bsc"
                             className="form-check-input"
                           />
@@ -206,20 +235,7 @@ export function EditEmployee() {
                   </div>
                 </div>
 
-                {/* File Upload */}
-                {/* <div className="row mb-3">
-                                    <div className="col-md-12">
-                                        <input
-                                            type="file"
-                                            name="emp_file"
-                                            onChange={(e) => formik.setFieldValue("emp_file", e.target.files?.[0])}
-                                            accept=".jpg,.jpeg,.png"
-                                            className="form-control"
-                                        />
-                                    </div>
-                                </div> */}
-
-                {/* Buttons */}
+                {/* Submit and Back Buttons */}
                 <div className="text-center">
                   <Button
                     type="submit"

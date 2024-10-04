@@ -41,19 +41,18 @@ export function AdminLogin() {
   return (
     <div
       style={{ height: "100vh" }}
-      className="d-flex justify-content-center align-items-center container-fluid"
+      className="d-flex justify-content-center align-items-center container"
     >
-      <div className="d-flex p-3 m-3 ">
+      <div className="sp-3 m-3 w-25 ">
         <form
           onSubmit={formik.handleSubmit}
-          className="form-control text-start m-3 p-4"
+          className="form-control bg-light text-start m-3 p-4"
         >
-          <div className="h2 p-3">ADMIN LOGIN </div>
+          <div className="h2 text-center mb-2 p-3">ADMIN LOGIN </div>
           <dl>
             <dd>
               <TextField
                 onChange={formik.handleChange}
-                helperText="Enter Your Email"
                 variant="outlined"
                 label="Email"
                 type="email"
@@ -66,7 +65,6 @@ export function AdminLogin() {
             <dd>
               <TextField
                 onChange={formik.handleChange}
-                helperText="Enter Your Password"
                 variant="outlined"
                 label="Password"
                 type="password"

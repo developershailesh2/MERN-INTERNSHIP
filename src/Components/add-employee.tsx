@@ -6,7 +6,12 @@ import * as Yup from "yup";
 import "./add-employee.css";
 import { EmpContract } from "../Contracts/emp_contract";
 import { useCookies } from "react-cookie";
-import { error } from "console";
+
+let empIdCounter = 1; // Simple counter for generating emp_id
+
+const generateEmpId = () => {
+  return empIdCounter++;
+};
 
 export function AddNewEmployee() {
   const [cookies, setCookies, removeCookies] = useCookies(["admin_email"]);
@@ -27,8 +32,7 @@ export function AddNewEmployee() {
     emp_gender: Yup.string().required("Select Gender"),
     emp_course: Yup.array()
       .required("Select Course")
-      .min(1, "Select atleast 1 Course"),
-    emp_file: Yup.mixed().required("Upload image"),
+      .min(1, "Select at least 1 Course"),
   });
 
   let navigate = useNavigate();
@@ -40,7 +44,6 @@ export function AddNewEmployee() {
       emp_designation: "",
       emp_gender: "",
       emp_course: [],
-      emp_file: null,
       created_date: new Date().toISOString(),
       userId: cookies["admin_email"],
     },
@@ -48,7 +51,7 @@ export function AddNewEmployee() {
     onSubmit: (emp_data) => {
       axios
         .post(`http://127.0.0.1:5252/add-employee`, emp_data)
-        .then((document) => {
+        .then(() => {
           alert(`Employee Registered Successfully...`);
           navigate("/admin-dashboard");
         })
@@ -62,12 +65,12 @@ export function AddNewEmployee() {
 
   return (
     <div className="d-flex justify-content-center container-fluid mt-3">
-      <div className="row">
-        <div className="d-flex justify-content-center w-100">
+      <div className="row w-50">
+        <div className="d-flex justify-content-center">
           <form
             encType="multipart/form-data"
             onSubmit={formik.handleSubmit}
-            className=" form-control  text-start m-3 p-4"
+            className="form-control bg-light text-warning text-start m-3 p-4"
           >
             <div className="h5 bg-dark text-white p-2 text-center rounded">
               Add New Employee
@@ -173,22 +176,17 @@ export function AddNewEmployee() {
                       value="mca"
                       id="mca"
                       className="form-check-input"
-                      onChange={(
-                        event: React.ChangeEvent<HTMLInputElement>
-                      ) => {
+                      onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
                         const { value, checked } = event.target;
                         let courses = [...formik.values.emp_course];
                         if (checked) {
                           courses.push(value);
                         } else {
-                          courses = courses.filter(
-                            (course) => course !== value
-                          );
+                          courses = courses.filter((course) => course !== value);
                         }
                         formik.setFieldValue("emp_course", courses);
                       }}
                     />
-
                     <label className="form-check-label fs-4" htmlFor="mca">
                       MCA
                     </label>
@@ -200,17 +198,13 @@ export function AddNewEmployee() {
                       value="bca"
                       id="bca"
                       className="form-check-input"
-                      onChange={(
-                        event: React.ChangeEvent<HTMLInputElement>
-                      ) => {
+                      onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
                         const { value, checked } = event.target;
                         let courses = [...formik.values.emp_course];
                         if (checked) {
                           courses.push(value);
                         } else {
-                          courses = courses.filter(
-                            (course) => course !== value
-                          );
+                          courses = courses.filter((course) => course !== value);
                         }
                         formik.setFieldValue("emp_course", courses);
                       }}
@@ -226,22 +220,17 @@ export function AddNewEmployee() {
                       value="bsc"
                       id="bsc"
                       className="form-check-input"
-                      onChange={(
-                        event: React.ChangeEvent<HTMLInputElement>
-                      ) => {
+                      onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
                         const { value, checked } = event.target;
                         let courses = [...formik.values.emp_course];
                         if (checked) {
                           courses.push(value);
                         } else {
-                          courses = courses.filter(
-                            (course) => course !== value
-                          );
+                          courses = courses.filter((course) => course !== value);
                         }
                         formik.setFieldValue("emp_course", courses);
                       }}
                     />
-
                     <label className="form-check-label fs-4" htmlFor="bsc">
                       BSc
                     </label>
@@ -250,24 +239,6 @@ export function AddNewEmployee() {
               </dd>
               <dd className="text-danger">{formik.errors.emp_course}</dd>
 
-              <legend className="text-center">Upload Image</legend>
-              <dd className="d-flex mt-3 justify-content-center flex-wrap">
-                <input
-                  type="file"
-                  name="emp_file"
-                  accept=".jpg,.jpeg,.png"
-                  className="form-control"
-                  onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                    const files = event.currentTarget.files;
-                    if (files && files.length > 0) {
-                      formik.setFieldValue("emp_file", files[0]);
-                    } else {
-                      formik.setFieldValue("emp_file", null); // Set to null if no file is selected
-                    }
-                  }}
-                />
-              </dd>
-              <dd className="text-danger">{formik.errors.emp_file}</dd>
             </dl>
             <div className="text-center">
               <Button

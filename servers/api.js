@@ -91,7 +91,6 @@ app.post("/add-employee", upload.single("emp_file"), (req, res) => {
     emp_course: Array.isArray(req.body.emp_course)
       ? req.body.emp_course
       : [req.body.emp_course],
-    emp_file: req.body.emp_file,
     created_date: new Date(),
     userId: req.body.userId,
   };
@@ -138,8 +137,7 @@ app.get("/get-employee/:emp_email", (req, res) => {
     var database = edit_emp.db("admin_internship_database");
     database
       .collection("t_Employee")
-      .find({ emp_email: req.params.emp_email })
-      .toArray()
+      .findOne({ emp_email: req.params.emp_email })
       .then((edit_emp) => {
         res.send(edit_emp);
         res.end();
@@ -153,15 +151,17 @@ app.put("/edit-employee/:emp_email", (req, res) => {
     database
       .collection("t_Employee")
       .updateOne(
-        { userId: req.params.emp_email },
+        { emp_email: req.params.emp_email },
         {
           $set: {
             emp_name: req.body.emp_name,
+            emp_email: req.body.emp_email,
             emp_mobile: req.body.emp_mobile,
             emp_designation: req.body.emp_designation,
             emp_gender: req.body.emp_gender,
             emp_course: req.body.emp_course,
-            emp_file: req.body.emp_file,
+            created_date : new Date(req.body.Date),
+            userId : req.body.userId
           },
         }
       )
@@ -176,6 +176,9 @@ app.put("/edit-employee/:emp_email", (req, res) => {
       });
   });
 });
+
+
+
 
 app.get("*", (req, res) => {
   res.send(`<code>The Page Your Looking for is Not available....</code>`);
